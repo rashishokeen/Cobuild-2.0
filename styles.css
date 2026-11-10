@@ -1585,6 +1585,8 @@ fieldset { border: none; }
 }
 .sponsor-lockup__mark { height: 22px; width: auto; max-width: 44px; object-fit: contain; }
 .sponsor-card--previous .sponsor-lockup__mark { height: 18px; }
+.sponsor-lockup__mark--badge { height: 24px; width: 24px; border-radius: 5px; object-fit: cover; }
+.sponsor-card--previous .sponsor-lockup__mark--badge { height: 22px; width: 22px; }
 .sponsor-lockup__word {
   font-weight: 700;
   font-size: 0.95rem;
