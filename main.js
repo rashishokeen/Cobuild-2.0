@@ -266,7 +266,7 @@
   }));
 
   const cobuildBeaconLogo = new Image();
-  cobuildBeaconLogo.src = 'assets/logos/cobuild-logo.png';
+  cobuildBeaconLogo.src = 'cobuild-logo.png';
 
   function smoothstep(e0, e1, x) {
     const t = Math.max(0, Math.min(1, (x - e0) / (e1 - e0)));
