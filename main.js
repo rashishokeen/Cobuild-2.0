@@ -199,7 +199,7 @@
       meta: 'ZONE 01 · CENTRAL HUB',
       label: 'OAT · Open Air Theatre',
       info: 'Concentric semi-circular landmark at the heart of DTU, anchored by the CoBuild 2.0 beacon.',
-      x: 0, y: 0, h: 16, pinLabel: 'OAT', elbowDx: 34, elbowDy: -22,
+      x: 0, y: 8, h: 4, pinLabel: 'OAT', elbowDx: 36, elbowDy: 16,
       yaw: 0.42, pitch: 0.48, zoom: 1.24, tx: 0, ty: 0,
     },
     arc: {
@@ -406,9 +406,9 @@
     function getViewportOrigin(W, H) {
       if (mode === 'hero') {
         if (W > 1024) return { cx: W * 0.67, cy: H * 0.50, refSpan: Math.min(W * 0.56, H * 0.92) };
-        return { cx: W * 0.50, cy: H * 0.67, refSpan: Math.min(W * 0.92, H * 0.48) };
+        return { cx: W * 0.50, cy: H * 0.70, refSpan: Math.min(W * 0.88, H * 0.44) };
       }
-      return { cx: W * 0.50, cy: H * 0.53, refSpan: Math.min(W, H) };
+      return { cx: W * 0.50, cy: W < 540 ? H * 0.55 : H * 0.53, refSpan: Math.min(W, H) };
     }
 
     function project(wx, wy, wz, W, H) {
@@ -419,7 +419,7 @@
       const rx = x * cy - y * sy;
       const ry = x * sy + y * cy;
       const origin = getViewportOrigin(W, H);
-      const scaleBase = origin.refSpan * (W < 540 ? 0.0031 : 0.0029) * cam.zoom;
+      const scaleBase = origin.refSpan * (W < 540 ? 0.00245 : 0.0029) * cam.zoom;
       const persp = 760 / (760 + ry * cp);
       return {
         x: origin.cx + rx * scaleBase * persp,
@@ -668,8 +668,10 @@
 
         const logoAlpha = smoothstep(0.42, 0.72, pAwake);
         if (logoAlpha > 0.02) {
-          const logoPt = project(0, 0, 70 + bob, W, H);
-          const haloR = 32;
+          const isNarrow = W < 540;
+          const badgeR = isNarrow ? 17 : 22;
+          const logoPt = project(0, 0, 74 + bob, W, H);
+          const haloR = badgeR + 10;
           const halo = ctx.createRadialGradient(logoPt.x, logoPt.y, 4, logoPt.x, logoPt.y, haloR);
           halo.addColorStop(0, `rgba(240,165,0,${(0.48 * logoAlpha).toFixed(3)})`);
           halo.addColorStop(1, 'rgba(240,165,0,0)');
@@ -679,19 +681,19 @@
           ctx.save();
           ctx.globalAlpha = logoAlpha;
           ctx.beginPath();
-          ctx.arc(logoPt.x, logoPt.y, 22, 0, Math.PI * 2);
+          ctx.arc(logoPt.x, logoPt.y, badgeR, 0, Math.PI * 2);
           ctx.fillStyle = '#FAF8F4';
           ctx.fill();
           ctx.lineWidth = 2;
           ctx.strokeStyle = '#FF7A00';
           ctx.stroke();
           if (cobuildBeaconLogo.complete && cobuildBeaconLogo.naturalWidth > 0) {
-            const lw = 32;
+            const lw = isNarrow ? 25 : 32;
             const lh = lw * (cobuildBeaconLogo.naturalHeight / cobuildBeaconLogo.naturalWidth);
             ctx.drawImage(cobuildBeaconLogo, logoPt.x - lw / 2, logoPt.y - lh / 2, lw, lh);
           } else {
             ctx.fillStyle = '#F0A500';
-            ctx.beginPath(); ctx.arc(logoPt.x, logoPt.y, 8, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(logoPt.x, logoPt.y, 7, 0, Math.PI * 2); ctx.fill();
           }
           ctx.restore();
         }
@@ -778,11 +780,17 @@
             const tw = ctx.measureText(lm.pinLabel).width;
             const bw = tw + 16, bh = 20;
             const bx = Math.max(12, Math.min(W - bw - 12, anchor.x - bw / 2));
-            const by = Math.max(52, anchor.y - 22 - bh);
+            const topMin = W < 768 ? 10 : 52;
+            const by = key === 'oat'
+              ? Math.min(H - bh - 10, anchor.y + 14)
+              : Math.max(topMin, anchor.y - 20 - bh);
 
             ctx.strokeStyle = selected ? '#FFC300' : 'rgba(240,165,0,0.6)';
             ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.moveTo(anchor.x, anchor.y); ctx.lineTo(bx + bw / 2, by + bh); ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(anchor.x, anchor.y);
+            ctx.lineTo(bx + bw / 2, key === 'oat' ? by : by + bh);
+            ctx.stroke();
 
             ctx.fillStyle = selected ? '#F0A500' : 'rgba(14,14,14,0.88)';
             ctx.strokeStyle = selected ? '#FFE082' : 'rgba(240,165,0,0.55)';

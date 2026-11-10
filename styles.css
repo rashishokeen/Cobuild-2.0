@@ -1361,6 +1361,8 @@ fieldset { border: none; }
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
   color: var(--white);
 }
 .campus-brand-pill__logo {
@@ -1388,6 +1390,7 @@ fieldset { border: none; }
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  white-space: nowrap;
   padding: 0.45rem 0.85rem;
   border-radius: 999px;
   background: rgba(16,16,16,0.82);
@@ -1835,16 +1838,64 @@ fieldset { border: none; }
   .nav-primary .btn { display: none; }
   .nav-toggle { display: flex; }
 
+  .logo__img { height: 36px; }
+
   .hero { grid-template-columns: 1fr; min-height: auto; padding-top: 3.5rem; }
   .hero__visual { display: none; }
 
-  .campus-stage { height: 500px; }
+  .campus-stage {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+  }
+  .campus-topbar {
+    position: static;
+    padding: 0.7rem 0.75rem 0;
+    gap: 0.4rem;
+    pointer-events: auto;
+  }
+  .campus-brand-pill {
+    padding: 0.28rem 0.55rem;
+    gap: 0.35rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.06em;
+  }
+  .campus-brand-pill__logo { padding: 2px 6px; }
+  .campus-brand-pill__logo img { height: 17px; }
+  .campus-controls { gap: 0.35rem; flex-shrink: 0; }
+  .campus-ctrl-btn {
+    padding: 0.3rem 0.58rem;
+    font-size: 0.58rem;
+    letter-spacing: 0.06em;
+  }
+  .campus-canvas {
+    width: 100%;
+    height: 290px;
+    aspect-ratio: 4 / 3;
+  }
   .campus-hud-card {
-    left: 0.75rem;
-    right: 0.75rem;
+    position: static;
     max-width: none;
-    bottom: 3.9rem;
-    padding: 0.75rem 0.9rem;
+    margin: 0 0.75rem 0.55rem;
+    padding: 0.8rem 0.95rem;
+  }
+  .campus-hud-card__title { font-size: 1.05rem; }
+  .campus-dock {
+    position: static;
+    margin: 0 0.75rem 0.75rem;
+    pointer-events: auto;
+  }
+  .campus-chips {
+    flex-wrap: wrap;
+    justify-content: center;
+    overflow-x: visible;
+    border-radius: var(--radius-md);
+    padding: 0.4rem;
+    gap: 0.35rem;
+  }
+  .campus-chip {
+    font-size: 0.65rem;
+    padding: 0.32rem 0.62rem;
   }
   .sponsor-grid--current { grid-template-columns: repeat(2, 1fr); }
   .sponsor-card--media { max-width: 100%; }

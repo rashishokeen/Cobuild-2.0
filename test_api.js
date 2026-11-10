@@ -120,6 +120,7 @@ async function runTests() {
     const text = await res.text();
     const ok = text.includes('CodeBuild 2.0 is Live') &&
       text.includes('cobuild-logo.png') &&
+      text.includes('redhawk.png') &&
       text.includes('CURRENT SPONSORS') &&
       text.includes('MEDIA PARTNER') &&
       text.includes('Eventopia') &&
@@ -135,6 +136,8 @@ async function runTests() {
     const hasStale = text.includes('259K+') ||
       text.includes('<form') ||
       text.includes('IGDTUW') ||
+      text.includes('Logo TBA') ||
+      text.includes('assets/logos/') ||
       text.includes('logo__sq') ||
       /\b(Top 200|Expected|Confirmed)\b/i.test(text);
     if (res.status !== 200 || !ok || hasStale) {
