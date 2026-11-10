@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+
+# Local SQLite database files
+*.db
+*.db-shm
+*.db-wal
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
