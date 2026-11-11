@@ -18,6 +18,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="animations.css" />
 </head>
 <body id="top">
 
@@ -81,6 +82,10 @@
     <!-- HERO -->
     <section class="hero" id="overview" data-section aria-labelledby="hero-h">
       <div class="hero__content reveal">
+        <div class="cb-countdown-chip" data-countdown="2026-11-16T00:00:00+05:30" aria-live="polite">
+          <span class="cb-countdown-chip__dot" aria-hidden="true"></span>
+          <span class="cb-countdown-chip__text">Round 1 opens in 4d 0h 0m</span>
+        </div>
         <p class="eyebrow">A COMMUNITY FOR THE ONES WHO BUILD.</p>
         <h1 id="hero-h" class="heading-xl hero__heading">
           Where ideas<br /><em>find builders.</em>
@@ -90,7 +95,10 @@
           or the people who get it.
         </p>
         <div class="hero__actions">
-          <a href="https://chat.whatsapp.com/EelRt8CGKeU09pI7OBNC9F" class="btn btn-black" target="_blank" rel="noopener noreferrer">
+          <a href="https://unstop.com/hackathons/codebuild-20-cobuild-1772164" class="btn btn-amber" target="_blank" rel="noopener noreferrer">
+            Register on Unstop ↗
+          </a>
+          <a href="https://chat.whatsapp.com/EelRt8CGKeU09pI7OBNC9F" class="btn btn-outline" target="_blank" rel="noopener noreferrer">
             Join WhatsApp Community ↗
           </a>
           <a href="community.html" class="btn-ghost">Meet the community ↗</a>
@@ -98,13 +106,13 @@
       </div>
 
       <div class="hero__visual" aria-hidden="true">
-        <div class="note note--amber hero__note-main">
+        <div class="note note--amber hero__note-main" data-parallax="-18">
           <p class="note__eyebrow">NOTE TO EVERY BUILDER</p>
           <p class="note__headline">That idea in your notes app?</p>
           <p class="note__sub">Let's build it.</p>
           <div style="width:60%;height:2px;background:rgba(26,26,26,0.2);margin-top:0.75rem;border-radius:1px;"></div>
         </div>
-        <div class="note note--white hero__note-secondary">
+        <div class="note note--white hero__note-secondary" data-parallax="14">
           <p class="note__eyebrow">THE MISSING INGREDIENT</p>
           <p class="note__headline" style="font-size:1.3rem;">Your idea.<br />Our kind of people.</p>
           <div class="note__tags">
@@ -165,7 +173,7 @@
           </p>
         </div>
 
-        <div class="features-grid">
+        <div class="features-grid features-grid--bento">
           <article class="feature-card reveal">
             <div class="feature-card__top">
               <svg class="feature-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -226,61 +234,63 @@
     <!-- INSIDE SECTION -->
     <section class="inside-section" id="inside" data-section aria-labelledby="inside-h">
       <div class="container">
-        <div class="inside-header">
-          <div class="reveal">
-            <p class="eyebrow eyebrow--amber">
-              <span aria-hidden="true">▪</span> WHAT HAPPENS INSIDE
+        <div class="inside-split">
+          <div class="inside-header">
+            <div class="reveal">
+              <p class="eyebrow eyebrow--amber">
+                <span aria-hidden="true">▪</span> WHAT HAPPENS INSIDE
+              </p>
+              <h2 id="inside-h" class="heading-lg" style="color:var(--white);">
+                Less talking about it.<br />More doing the thing.
+              </h2>
+            </div>
+            <p class="body-lg reveal" style="max-width:28ch;">
+              Six reasons people stick around — and start building.
             </p>
-            <h2 id="inside-h" class="heading-lg" style="color:var(--white);">
-              Less talking about it.<br />More doing the thing.
-            </h2>
           </div>
-          <p class="body-lg reveal" style="max-width:28ch;">
-            Six reasons people stick around — and start building.
-          </p>
-        </div>
 
-        <div class="inside-grid">
-          <div class="inside-item reveal">
-            <div class="inside-badge" aria-hidden="true">01</div>
-            <div>
-              <h3 class="inside-title">Find Co-Founders</h3>
-              <p class="inside-desc">Match with people whose skills complement yours and ship together.</p>
+          <div class="inside-grid">
+            <div class="inside-item reveal" style="--stack-i:0;">
+              <div class="inside-badge" aria-hidden="true">01</div>
+              <div>
+                <h3 class="inside-title">Find Co-Founders</h3>
+                <p class="inside-desc">Match with people whose skills complement yours and ship together.</p>
+              </div>
             </div>
-          </div>
-          <div class="inside-item reveal reveal-delay-1">
-            <div class="inside-badge" aria-hidden="true">02</div>
-            <div>
-              <h3 class="inside-title">Validate Ideas</h3>
-              <p class="inside-desc">Pitch your concept and get blunt, useful feedback from real builders.</p>
+            <div class="inside-item reveal reveal-delay-1" style="--stack-i:1;">
+              <div class="inside-badge" aria-hidden="true">02</div>
+              <div>
+                <h3 class="inside-title">Validate Ideas</h3>
+                <p class="inside-desc">Pitch your concept and get blunt, useful feedback from real builders.</p>
+              </div>
             </div>
-          </div>
-          <div class="inside-item reveal reveal-delay-2">
-            <div class="inside-badge" aria-hidden="true">03</div>
-            <div>
-              <h3 class="inside-title">Join Projects</h3>
-              <p class="inside-desc">Discover open roles in side projects, startups and hackathon teams.</p>
+            <div class="inside-item reveal reveal-delay-2" style="--stack-i:2;">
+              <div class="inside-badge" aria-hidden="true">03</div>
+              <div>
+                <h3 class="inside-title">Join Projects</h3>
+                <p class="inside-desc">Discover open roles in side projects, startups and hackathon teams.</p>
+              </div>
             </div>
-          </div>
-          <div class="inside-item reveal reveal-delay-3">
-            <div class="inside-badge" aria-hidden="true">04</div>
-            <div>
-              <h3 class="inside-title">Build in Public</h3>
-              <p class="inside-desc">Share progress, ask for help and celebrate launches with people who get it.</p>
+            <div class="inside-item reveal reveal-delay-3" style="--stack-i:3;">
+              <div class="inside-badge" aria-hidden="true">04</div>
+              <div>
+                <h3 class="inside-title">Build in Public</h3>
+                <p class="inside-desc">Share progress, ask for help and celebrate launches with people who get it.</p>
+              </div>
             </div>
-          </div>
-          <div class="inside-item reveal reveal-delay-4">
-            <div class="inside-badge" aria-hidden="true">05</div>
-            <div>
-              <h3 class="inside-title">Learn Continuously</h3>
-              <p class="inside-desc">Resources, workshops, and conversations on startups, AI and product craft.</p>
+            <div class="inside-item reveal reveal-delay-4" style="--stack-i:4;">
+              <div class="inside-badge" aria-hidden="true">05</div>
+              <div>
+                <h3 class="inside-title">Learn Continuously</h3>
+                <p class="inside-desc">Resources, workshops, and conversations on startups, AI and product craft.</p>
+              </div>
             </div>
-          </div>
-          <div class="inside-item reveal reveal-delay-5">
-            <div class="inside-badge" aria-hidden="true">06</div>
-            <div>
-              <h3 class="inside-title">Ship Faster</h3>
-              <p class="inside-desc">Accountability, momentum, and a community that celebrates shipping.</p>
+            <div class="inside-item reveal reveal-delay-5" style="--stack-i:5;">
+              <div class="inside-badge" aria-hidden="true">06</div>
+              <div>
+                <h3 class="inside-title">Ship Faster</h3>
+                <p class="inside-desc">Accountability, momentum, and a community that celebrates shipping.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -395,8 +405,15 @@
             </div>
           </div>
 
-          <canvas id="dtu-campus-canvas" class="campus-canvas" role="img"
-                  aria-label="Interactive 3D wireframe illustration of DTU campus in CoBuild amber and orange palette with floating CoBuild logo"></canvas>
+          <div class="campus-canvas-wrap">
+            <div class="campus-loader" aria-hidden="true">
+              <div class="campus-loader__ring"></div>
+              <span class="campus-loader__text">Initializing DTU 3D Campus...</span>
+            </div>
+            <div class="campus-orbit-hint" aria-hidden="true">Drag to orbit</div>
+            <canvas id="dtu-campus-canvas" class="campus-canvas" role="img"
+                    aria-label="Interactive 3D wireframe illustration of DTU campus in CoBuild amber and orange palette with floating CoBuild logo"></canvas>
+          </div>
 
           <div class="campus-hud-card" aria-live="polite">
             <p class="campus-hud-card__meta">CODEBUILD 2.0 · DTU CAMPUS</p>
@@ -590,6 +607,7 @@
   </footer>
 
   <script src="main.js"></script>
+  <script src="animations.js"></script>
 
   <style>
     @media (max-width:768px) {

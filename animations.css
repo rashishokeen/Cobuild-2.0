@@ -1,0 +1,633 @@
+/* ============================================================
+   CoBuild — Shared Motion, Micro-Interactions & UX Polish
+   Strict Palette Reuse: --bg (#E8E2D5), --bg-dark (#1A1A1A),
+   --amber (#F0A500), --black (#1A1A1A), --white (#FFFFFF)
+   Disable globally with <html class="no-animations">
+   ============================================================ */
+
+/* ── 1. Page View Transitions (MPA + fallback) ─────────────── */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 240ms;
+  animation-timing-function: var(--ease-out);
+}
+
+html.cb-page-leaving body {
+  opacity: 0;
+  transition: opacity 0.16s var(--ease-out);
+}
+
+/* ── 2. Top Amber Scroll Progress Bar ──────────────────────── */
+.cb-scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--amber);
+  transform-origin: left center;
+  transform: scaleX(0);
+  z-index: 1000;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* ── 3. First-Visit Brand Reveal (< 1s, JS-only, non-blocking) */
+.cb-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  opacity: 1;
+  transition: opacity 0.35s var(--ease-out), visibility 0.35s;
+}
+.cb-loader.is-done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.cb-loader__logo {
+  height: 58px;
+  width: auto;
+  animation: cb-loader-pop 0.5s var(--ease-spring) both;
+}
+.cb-loader__bar {
+  width: 120px;
+  height: 2px;
+  background: rgba(26,26,26,0.12);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.cb-loader__fill {
+  width: 100%;
+  height: 100%;
+  background: var(--amber);
+  transform-origin: left center;
+  transform: scaleX(0);
+  animation: cb-loader-sweep 0.55s var(--ease-out) forwards;
+}
+@keyframes cb-loader-pop {
+  from { opacity: 0; transform: scale(0.9) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes cb-loader-sweep {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* ── 4. Subtle Beige Grain Texture & Section Blending ──────── */
+html:not(.no-grain) .hero,
+html:not(.no-grain) .features-section,
+html:not(.no-grain) .people-section,
+html:not(.no-grain) .partners-section,
+html:not(.no-grain) #join,
+html:not(.no-grain) #codebuild2,
+html:not(.no-grain) #past,
+html:not(.no-grain) #comm-overview,
+html:not(.no-grain) #comm-join {
+  position: relative;
+}
+html:not(.no-grain) .hero::after,
+html:not(.no-grain) .features-section::after,
+html:not(.no-grain) .people-section::after,
+html:not(.no-grain) .partners-section::after,
+html:not(.no-grain) #join::after,
+html:not(.no-grain) #codebuild2::after,
+html:not(.no-grain) #past::after,
+html:not(.no-grain) #comm-overview::after,
+html:not(.no-grain) #comm-join::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.hero > *,
+.features-section > .container,
+.people-section > .container,
+.partners-section > .container,
+#join > .container,
+#codebuild2 > .container,
+#past > .container,
+#comm-overview > .container,
+#comm-join > .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Soft vertical gradient transition between beige and dark sections */
+.inside-section,
+.campus-section,
+.contact-section,
+.hack-hero {
+  box-shadow:
+    inset 0 42px 48px -32px rgba(232,226,213,0.16),
+    inset 0 -42px 48px -32px rgba(232,226,213,0.14);
+}
+
+/* ── 5. Smooth Animated Mobile Drawer + Staggered Links ──── */
+.nav-drawer {
+  display: flex;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-12px);
+  pointer-events: none;
+  transition: opacity 0.28s var(--ease-out), transform 0.28s var(--ease-out), visibility 0s linear 0.28s;
+}
+.nav-drawer.is-open {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  transition: opacity 0.28s var(--ease-out), transform 0.28s var(--ease-out), visibility 0s;
+}
+.nav-drawer .nav-link,
+.nav-drawer .btn {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.32s var(--ease-out), transform 0.32s var(--ease-out), color var(--transition);
+}
+.nav-drawer.is-open .nav-link,
+.nav-drawer.is-open .btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+.nav-drawer.is-open .nav-link:nth-child(1) { transition-delay: 0.06s; }
+.nav-drawer.is-open .nav-link:nth-child(2) { transition-delay: 0.11s; }
+.nav-drawer.is-open .nav-link:nth-child(3) { transition-delay: 0.16s; }
+.nav-drawer.is-open .nav-link:nth-child(4) { transition-delay: 0.21s; }
+.nav-drawer.is-open .btn                  { transition-delay: 0.26s; }
+
+/* ── 6. Hero Word Reveal, Italic Underline, Countdown & Spotlight */
+.cb-word-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.cb-word {
+  display: inline-block;
+  transform: translateY(108%);
+  opacity: 0;
+  transition: transform 0.55s var(--ease-out), opacity 0.45s ease;
+  transition-delay: calc(var(--wi, 0) * 55ms);
+}
+.is-visible .cb-word,
+.cb-words-ready .cb-word {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.cb-em-line {
+  position: relative;
+  display: inline-block;
+}
+.cb-em-line::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.06em;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--amber);
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 0.7s var(--ease-out) 0.32s;
+}
+.is-visible .cb-em-line::after,
+.cb-words-ready .cb-em-line::after {
+  transform: scaleX(1);
+}
+
+/* Countdown Chip */
+.cb-countdown-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 0.36rem 0.85rem;
+  border-radius: 999px;
+  margin-bottom: 0.9rem;
+  background: rgba(240,165,0,0.16);
+  border: 1px solid rgba(240,165,0,0.45);
+  color: var(--black);
+  font-variant-numeric: tabular-nums;
+}
+.hack-hero .cb-countdown-chip {
+  background: rgba(240,165,0,0.14);
+  border-color: rgba(240,165,0,0.42);
+  color: var(--bg-off);
+}
+.cb-countdown-chip__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--amber);
+  flex-shrink: 0;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* Soft Desktop-Only Cursor Spotlight */
+.cb-hero-spotlight {
+  display: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .hero,
+  .hack-hero {
+    position: relative;
+  }
+  .cb-hero-spotlight {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 460px;
+    height: 460px;
+    margin-left: -230px;
+    margin-top: -230px;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(circle, rgba(240,165,0,0.16) 0%, rgba(240,165,0,0.05) 40%, transparent 72%);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    will-change: transform, opacity;
+    z-index: 0;
+  }
+  .hack-hero .cb-hero-spotlight { z-index: 1; }
+  .cb-hero-spotlight.is-active { opacity: 1; }
+}
+
+/* Sticky-note Parallax offset hook (GPU transform-only) */
+.hero__note-main[data-parallax] {
+  transform: rotate(-3.5deg) translate3d(0, var(--py, -20px), 0);
+}
+.hero__note-secondary[data-parallax] {
+  transform: rotate(2.5deg) translate3d(0, var(--py, 10px), 0);
+}
+
+/* ── 7. Staggered Scroll Reveals ──────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+  transition: opacity 0.55s var(--ease-out), transform 0.6s var(--ease-out);
+  transition-delay: var(--cb-delay, 0ms);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* ── 8. Card 3D Tilt, Cursor Glow & Accent Numbers ────────── */
+.feature-card,
+.inside-item,
+.timeline-card,
+.hack-stat,
+.event-meta-cell {
+  position: relative;
+}
+.feature-card__num {
+  transition: color 0.25s ease, transform 0.25s var(--ease-spring);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cb-glow-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    background: radial-gradient(280px circle at var(--mx, 50%) var(--my, 50%), rgba(240,165,0,0.16), transparent 65%);
+    z-index: 1;
+  }
+  .cb-glow-card:hover::before {
+    opacity: 1;
+  }
+  .feature-card:hover .feature-card__num,
+  .feature-card:hover .feature-card__icon {
+    color: var(--amber);
+    opacity: 1;
+    transform: scale(1.12);
+  }
+  .cb-tilt-card {
+    transform-style: preserve-3d;
+    transition: transform 0.22s var(--ease-out), background var(--transition), border-color var(--transition), box-shadow var(--transition);
+    will-change: transform;
+  }
+}
+
+/* ── 9. Floating / Drifting Role Chips (People Section) ───── */
+@keyframes cb-chip-drift {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50%      { transform: translate3d(0, -5px, 0); }
+}
+.people-tag {
+  animation: cb-chip-drift 5.2s ease-in-out infinite;
+  animation-delay: calc(var(--ci, 0) * 0.65s);
+}
+.people-tag:hover,
+.people-tag:active,
+.people-tag.is-tapped {
+  background: var(--amber);
+  border-color: var(--amber);
+  color: var(--black);
+  transform: translate3d(0, -3px, 0);
+}
+
+/* ── 10. DTU Campus Skeleton Loader & Drag Hint ────────────── */
+.campus-canvas-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.campus-loader {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  background: #101010;
+  transition: opacity 0.45s var(--ease-out), visibility 0.45s;
+}
+.campus-loader.is-done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.campus-loader__ring {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 2px solid rgba(240,165,0,0.2);
+  border-top-color: var(--amber);
+  animation: spin-slow 0.9s linear infinite;
+}
+.campus-loader__text {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(232,226,213,0.72);
+}
+
+.campus-orbit-hint {
+  position: absolute;
+  top: 4.15rem;
+  right: 1rem;
+  z-index: 4;
+  padding: 0.34rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(16,16,16,0.78);
+  border: 1px solid rgba(240,165,0,0.32);
+  color: rgba(232,226,213,0.85);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  pointer-events: none;
+  transition: opacity 0.4s var(--ease-out), transform 0.4s var(--ease-out);
+}
+.campus-orbit-hint.is-dismissed {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+/* ── 11. Sponsors: Grayscale Hover, Opposite Marquees & Eventopia */
+@media (hover: hover) and (pointer: fine) {
+  .sponsor-card .sponsor-logo,
+  .sponsor-card .sponsor-lockup__mark,
+  .sponsor-card .sponsor-lockup__word {
+    filter: grayscale(100%);
+    opacity: 0.72;
+    transition: filter 0.3s var(--ease-out), opacity 0.3s ease;
+  }
+  .sponsor-card:hover .sponsor-logo,
+  .sponsor-card:hover .sponsor-lockup__mark,
+  .sponsor-card:hover .sponsor-lockup__word {
+    filter: grayscale(0%);
+    opacity: 1;
+  }
+}
+
+.cb-sponsor-marquee {
+  overflow: hidden;
+  width: 100%;
+  margin-top: 1rem;
+  mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+}
+.cb-sponsor-track {
+  display: flex;
+  align-items: stretch;
+  width: max-content;
+  gap: 1rem;
+}
+.cb-sponsor-half {
+  display: flex;
+  align-items: stretch;
+  gap: 1rem;
+}
+.cb-sponsor-track--left {
+  animation: cb-sponsor-left 28s linear infinite;
+}
+.cb-sponsor-track--right {
+  animation: cb-sponsor-right 32s linear infinite;
+}
+.cb-sponsor-marquee:hover .cb-sponsor-track {
+  animation-play-state: paused;
+}
+.cb-sponsor-track .sponsor-grid--current,
+.cb-sponsor-track .sponsor-grid--previous {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 1rem;
+  margin-top: 0;
+}
+.cb-sponsor-track .sponsor-card {
+  flex: 0 0 210px;
+  min-height: 86px;
+}
+.cb-sponsor-track .sponsor-logo {
+  height: 30px;
+  max-height: 30px;
+  max-width: 136px;
+}
+.cb-sponsor-track .sponsor-card--previous .sponsor-logo {
+  height: 24px;
+  max-height: 24px;
+  max-width: 120px;
+}
+
+@keyframes cb-sponsor-left {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(calc(-50% - 0.5rem), 0, 0); }
+}
+@keyframes cb-sponsor-right {
+  from { transform: translate3d(calc(-50% - 0.5rem), 0, 0); }
+  to   { transform: translate3d(0, 0, 0); }
+}
+
+/* Eventopia Media Partner distinct badge style */
+.sponsor-card--media {
+  position: relative;
+  border: 1.5px solid var(--black);
+  box-shadow: 4px 4px 0 var(--amber);
+}
+.sponsor-card--media .sponsor-tag {
+  background: var(--black);
+  color: var(--amber);
+  padding: 0.28rem 0.72rem;
+  border-radius: 999px;
+  letter-spacing: 0.12em;
+}
+
+/* ── 12. Buttons: Arrow Slide, Shimmer & Sticky Mobile Bar ── */
+.btn,
+.btn-amber,
+.btn-black {
+  position: relative;
+  overflow: hidden;
+  will-change: transform;
+}
+.btn-amber::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 25%, rgba(255,255,255,0.42) 50%, transparent 75%);
+  transform: translateX(-130%) skewX(-18deg);
+  transition: transform 0.65s var(--ease-out);
+  pointer-events: none;
+}
+.btn-amber:hover::before {
+  transform: translateX(130%) skewX(-18deg);
+}
+.cb-arrow {
+  display: inline-block;
+  transition: transform 0.22s var(--ease-out);
+}
+a:hover .cb-arrow,
+button:hover .cb-arrow {
+  transform: translate3d(3px, -3px, 0);
+}
+
+/* Mobile Sticky Register Bar */
+.cb-mobile-bar {
+  display: none;
+}
+@media (max-width: 768px) {
+  .cb-mobile-bar {
+    position: fixed;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    z-index: 95;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem;
+    border-radius: var(--radius-lg);
+    background: rgba(26,26,26,0.94);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(240,165,0,0.35);
+    box-shadow: var(--shadow-lg);
+    transform: translate3d(0, 140%, 0);
+    opacity: 0;
+    transition: transform 0.35s var(--ease-out), opacity 0.35s ease;
+    pointer-events: none;
+  }
+  .cb-mobile-bar.is-visible {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .cb-mobile-bar__primary {
+    flex: 1;
+    padding: 0.72rem 0.9rem;
+    font-size: 0.8125rem;
+  }
+  .cb-mobile-bar__secondary {
+    padding: 0.72rem 0.9rem;
+    font-size: 0.78rem;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255,255,255,0.22);
+    color: var(--white);
+    white-space: nowrap;
+  }
+  .campus-orbit-hint {
+    top: auto;
+    bottom: 0.65rem;
+    right: 0.65rem;
+    font-size: 0.6rem;
+    padding: 0.25rem 0.55rem;
+  }
+  .campus-canvas-wrap {
+    position: relative;
+    height: 290px;
+  }
+  body.has-mobile-bar {
+    padding-bottom: 5rem;
+  }
+}
+
+/* Enhanced Focus Rings */
+:focus-visible {
+  outline: 2.5px solid var(--amber) !important;
+  outline-offset: 3px !important;
+}
+
+/* ── 13. Reduced Motion Safety ────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .cb-scroll-progress,
+  .cb-hero-spotlight,
+  .cb-loader {
+    display: none !important;
+  }
+  .cb-word {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  .cb-em-line::after {
+    transform: scaleX(1) !important;
+  }
+  .people-tag {
+    animation: none !important;
+  }
+  .cb-sponsor-track,
+  .cb-sponsor-half {
+    animation: none !important;
+    width: 100%;
+    justify-content: center;
+  }
+  .cb-sponsor-marquee {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+  .cb-sponsor-track [data-clone] {
+    display: none !important;
+  }
+  .cb-sponsor-track .sponsor-grid--current,
+  .cb-sponsor-track .sponsor-grid--previous {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}

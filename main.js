@@ -291,6 +291,8 @@
     const orbitBtn  = container.querySelector('[data-dtu-orbit]');
     const resetBtn  = container.querySelector('[data-dtu-reset]');
     const replayBtn = container.querySelector('[data-dtu-replay]');
+    const loader    = container.querySelector('.campus-loader');
+    const orbitHint = container.querySelector('.campus-orbit-hint');
 
     const baseLm = DTU_LANDMARKS.overview;
     const cam = {
@@ -307,22 +309,43 @@
     let isDragging     = false;
     let dragX = 0, dragY = 0;
     let inView         = false;
+    let initialized    = mode !== 'stage';
     let rafId          = null;
+    let fly            = null;
     let pinHits        = [];
     let awakeningStart = performance.now();
     const awakeDur     = mode === 'hero' ? 3200 : 1200;
 
     const triggerDraw = () => drawFrame(performance.now());
+    const easeInOutCubic = (u) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
+
+    const markInteracted = () => {
+      userInteracted = true;
+      if (orbitHint) orbitHint.classList.add('is-dismissed');
+    };
 
     const selectZone = (key) => {
       const lm = DTU_LANDMARKS[key] || DTU_LANDMARKS.overview;
       activeZone = key;
-      userInteracted = true;
-      cam.tYaw = lm.yaw;
-      cam.tPitch = lm.pitch;
-      cam.tZoom = lm.zoom;
-      cam.tTx = lm.tx;
-      cam.tTy = lm.ty;
+      markInteracted();
+      if (prefersReduced) {
+        fly = null;
+        cam.yaw = cam.tYaw = lm.yaw;
+        cam.pitch = cam.tPitch = lm.pitch;
+        cam.zoom = cam.tZoom = lm.zoom;
+        cam.tx = cam.tTx = lm.tx;
+        cam.ty = cam.tTy = lm.ty;
+      } else {
+        const tau = Math.PI * 2;
+        const wrapDelta = ((lm.yaw - cam.yaw + Math.PI) % tau + tau) % tau - Math.PI;
+        fly = {
+          active: true,
+          start: performance.now(),
+          dur: 820,
+          fYaw: cam.yaw, fPitch: cam.pitch, fZoom: cam.zoom, fTx: cam.tx, fTy: cam.ty,
+          tYaw: cam.yaw + wrapDelta, tPitch: lm.pitch, tZoom: lm.zoom, tTx: lm.tx, tTy: lm.ty,
+        };
+      }
       if (hudMeta)  hudMeta.textContent  = lm.meta;
       if (hudTitle) hudTitle.textContent = lm.label;
       if (hudDesc)  hudDesc.textContent  = lm.info;
@@ -332,7 +355,9 @@
 
     const replayAwakening = () => {
       awakeningStart = performance.now();
+      fly = null;
       userInteracted = false;
+      if (orbitHint) orbitHint.classList.remove('is-dismissed');
       activeZone = 'overview';
       cam.yaw = -0.58; cam.pitch = 1.14; cam.zoom = 0.45; cam.tx = 0; cam.ty = 0;
       cam.tYaw = baseLm.yaw; cam.tPitch = baseLm.pitch; cam.tZoom = baseLm.zoom; cam.tTx = 0; cam.tTy = 0;
@@ -355,7 +380,8 @@
       orbitBtn.classList.toggle('is-active', autoOrbit);
       orbitBtn.addEventListener('click', () => {
         autoOrbit = !autoOrbit;
-        userInteracted = true;
+        fly = null;
+        markInteracted();
         orbitBtn.classList.toggle('is-active', autoOrbit);
       });
     }
@@ -372,7 +398,8 @@
 
     canvas.addEventListener('pointerdown', (e) => {
       isDragging = true;
-      userInteracted = true;
+      fly = null;
+      markInteracted();
       dragX = e.clientX;
       dragY = e.clientY;
     });
@@ -390,6 +417,7 @@
       dragY = e.clientY;
     });
     window.addEventListener('pointerup', () => { isDragging = false; });
+    window.addEventListener('pointercancel', () => { isDragging = false; });
 
     canvas.addEventListener('click', (e) => {
       const rect = canvas.getBoundingClientRect();
@@ -548,6 +576,17 @@
         cam.pitch = 1.14 + (baseLm.pitch - 1.14) * dive;
         cam.zoom  = 0.45 + (baseLm.zoom - 0.45) * dive;
         cam.tYaw = cam.yaw; cam.tPitch = cam.pitch; cam.tZoom = cam.zoom;
+      } else if (fly && fly.active) {
+        const u = Math.min(1, (now - fly.start) / fly.dur);
+        const e = easeInOutCubic(u);
+        cam.yaw   = fly.fYaw   + (fly.tYaw   - fly.fYaw)   * e;
+        cam.pitch = fly.fPitch + (fly.tPitch - fly.fPitch) * e;
+        cam.zoom  = fly.fZoom  + (fly.tZoom  - fly.fZoom)  * e;
+        cam.tx    = fly.fTx    + (fly.tTx    - fly.fTx)    * e;
+        cam.ty    = fly.fTy    + (fly.tTy    - fly.fTy)    * e;
+        cam.tYaw = cam.yaw; cam.tPitch = cam.pitch; cam.tZoom = cam.zoom;
+        cam.tTx = cam.tx; cam.tTy = cam.ty;
+        if (u >= 1) fly.active = false;
       } else {
         if (autoOrbit && !isDragging) cam.tYaw += mode === 'hero' ? 0.0011 : 0.0018;
         cam.yaw   += (cam.tYaw - cam.yaw) * 0.08;
@@ -645,9 +684,25 @@
         .sort((a, b) => b.depth - a.depth)
         .forEach((b) => drawBox(b, W, H, now, pAwake));
 
-      // 5. Central Vertical Beacon Light Beam + Floating CoBuild Logo Medallion
+      // 5. Central Vertical Beacon Light Beam + Concentric OAT Pulse Ring + Floating CoBuild Logo
       const beamGrow = smoothstep(0.32, 0.68, pAwake);
       if (beamGrow > 0.02) {
+        if (!prefersReduced) {
+          ctx.save();
+          for (let ring = 0; ring < 2; ring++) {
+            const p = ((now * 0.00045 + ring * 0.5) % 1);
+            const rRad = 18 + p * 44;
+            ctx.beginPath();
+            for (let a = 0; a <= Math.PI * 2 + 0.16; a += 0.22) {
+              const rp = project(Math.cos(a) * rRad, Math.sin(a) * rRad * 0.86, 1, W, H);
+              if (a === 0) ctx.moveTo(rp.x, rp.y); else ctx.lineTo(rp.x, rp.y);
+            }
+            ctx.strokeStyle = `rgba(240,165,0,${((1 - p) * 0.62 * beamGrow).toFixed(3)})`;
+            ctx.lineWidth = 1.6;
+            ctx.stroke();
+          }
+          ctx.restore();
+        }
         const basePt = project(0, 0, 2, W, H);
         const bob = prefersReduced ? 0 : Math.sin(now * 0.0022) * 5;
         const topPt = project(0, 0, 142 * beamGrow, W, H);
@@ -745,10 +800,21 @@
       if (callAlpha > 0.05) {
         ctx.save();
         ctx.globalAlpha = callAlpha;
-        ['oat', 'arc', 'sports', 'lake', 'hostels'].forEach((key) => {
+        ['oat', 'arc', 'sports', 'lake', 'hostels'].forEach((key, zIdx) => {
           const lm = DTU_LANDMARKS[key];
           const anchor = project(lm.x, lm.y, lm.h, W, H);
           const selected = activeZone === key;
+
+          if (!prefersReduced) {
+            const hp = ((now * 0.00075 + zIdx * 0.18) % 1);
+            ctx.strokeStyle = selected
+              ? `rgba(255,195,0,${((1 - hp) * 0.92).toFixed(3)})`
+              : `rgba(240,165,0,${((1 - hp) * 0.62).toFixed(3)})`;
+            ctx.lineWidth = selected ? 1.8 : 1.2;
+            ctx.beginPath();
+            ctx.arc(anchor.x, anchor.y, 4 + hp * (selected ? 12 : 9), 0, Math.PI * 2);
+            ctx.stroke();
+          }
 
           if (mode === 'hero') {
             ctx.font = '600 10px ui-monospace, SFMono-Regular, Menlo, monospace';
@@ -785,6 +851,9 @@
               ? Math.min(H - bh - 10, anchor.y + 14)
               : Math.max(topMin, anchor.y - 20 - bh);
 
+            ctx.fillStyle = selected ? '#FFC300' : '#F0A500';
+            ctx.beginPath(); ctx.arc(anchor.x, anchor.y, selected ? 3.8 : 2.8, 0, Math.PI * 2); ctx.fill();
+
             ctx.strokeStyle = selected ? '#FFC300' : 'rgba(240,165,0,0.6)';
             ctx.lineWidth = 1;
             ctx.beginPath();
@@ -805,6 +874,11 @@
       }
     }
 
+    const markLoaderDone = () => {
+      if (!loader || loader.classList.contains('is-done')) return;
+      window.setTimeout(() => loader.classList.add('is-done'), prefersReduced ? 0 : 180);
+    };
+
     const loop = (now) => {
       if (!inView || prefersReduced) { rafId = null; return; }
       drawFrame(now);
@@ -815,19 +889,33 @@
       const obs = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
           inView = entry.isIntersecting;
-          if (inView && !prefersReduced && !rafId) {
-            rafId = requestAnimationFrame(loop);
+          if (inView) {
+            if (!initialized) {
+              initialized = true;
+              awakeningStart = performance.now();
+              triggerDraw();
+              markLoaderDone();
+            }
+            if (!prefersReduced && !rafId) {
+              rafId = requestAnimationFrame(loop);
+            }
           }
         });
       }, { threshold: 0.05 });
       obs.observe(container);
     } else {
+      initialized = true;
       inView = true;
+      triggerDraw();
+      markLoaderDone();
       if (!prefersReduced) rafId = requestAnimationFrame(loop);
     }
 
-    triggerDraw();
-    window.addEventListener('resize', triggerDraw, { passive: true });
+    if (initialized) {
+      triggerDraw();
+      markLoaderDone();
+    }
+    window.addEventListener('resize', () => { if (initialized) triggerDraw(); }, { passive: true });
   }
 
   initDtuCampusCanvas(document.getElementById('dtu-campus-canvas'), { mode: 'stage', containerSelector: '.campus-stage' });
