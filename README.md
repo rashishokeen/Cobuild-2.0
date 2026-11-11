@@ -187,7 +187,7 @@ The server binds to `process.env.PORT` (defaults to `3000`).
 ```nginx
 server {
   listen 80;
-  server_name cobuild.in;
+  server_name thecobuild.xyz www.thecobuild.xyz;
 
   location / {
     proxy_pass http://localhost:3000;

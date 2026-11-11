@@ -40,7 +40,7 @@ app.use(
 );
 
 app.use(cors({
-  origin: isDev ? '*' : ['https://cobuild.in', 'https://www.cobuild.in'],
+  origin: isDev ? '*' : ['https://thecobuild.xyz', 'https://www.thecobuild.xyz'],
   methods: ['GET', 'POST'],
 }));
 
